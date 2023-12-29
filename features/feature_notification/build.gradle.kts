@@ -13,5 +13,6 @@ applyAndroidLibrary()
 dependencies {
     implementation(project(":core"))
     implementation(Deps.Google.dagger)
+    implementation(Deps.Google.gson)
     kapt(Deps.Kapt.dagger)
 }

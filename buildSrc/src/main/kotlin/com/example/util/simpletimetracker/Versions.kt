@@ -20,6 +20,7 @@ object Versions {
     const val cardView = "1.0.0"
     const val material = "1.2.0"
     const val emoji = "1.2.0"
+    const val gson = "2.10.1"
 
     const val fragmentKtx = "1.3.4"
     const val coreKtx = "1.2.0"

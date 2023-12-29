@@ -34,6 +34,8 @@ object Deps {
             "com.google.dagger:hilt-android:${Versions.dagger}"
         const val flexBox =
             "com.google.android:flexbox:${Versions.flexBox}"
+        const val gson =
+            "com.google.code.gson:gson:${Versions.gson}"
     }
 
     object Emoji {

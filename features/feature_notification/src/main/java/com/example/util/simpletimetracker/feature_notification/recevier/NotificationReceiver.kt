@@ -16,6 +16,7 @@ import com.example.util.simpletimetracker.core.utils.EXTRA_RECORD_COMMENT
 import com.example.util.simpletimetracker.core.utils.EXTRA_RECORD_TAG_NAME
 import com.example.util.simpletimetracker.domain.model.RecordTypeGoal
 import com.example.util.simpletimetracker.feature_notification.activity.controller.NotificationActivityBroadcastController
+import com.example.util.simpletimetracker.feature_notification.adhocExport.controller.AdhocExportController
 import com.example.util.simpletimetracker.feature_notification.automaticBackup.controller.AutomaticBackupBroadcastController
 import com.example.util.simpletimetracker.feature_notification.automaticExport.controller.AutomaticExportBroadcastController
 import com.example.util.simpletimetracker.feature_notification.goalTime.controller.NotificationGoalTimeBroadcastController
@@ -56,6 +57,9 @@ class NotificationReceiver : BroadcastReceiver() {
 
     @Inject
     lateinit var automaticExportController: AutomaticExportBroadcastController
+
+    @Inject
+    lateinit var adhocExportController: AdhocExportController
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val action = intent?.action
@@ -194,6 +198,30 @@ class NotificationReceiver : BroadcastReceiver() {
             AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED -> {
                 goalTimeController.onExactAlarmPermissionStateChanged()
             }
+
+            ACTION_ADHOC_EXPORT_CATEGORIES -> {
+                val callbackPackageName = intent.getStringExtra(EXTRA_ADHOC_EXPORT_CALLBACK_PACKAGE_NAME)
+
+                if (callbackPackageName != null) {
+                    Intent(ACTION_ADHOC_EXPORT_CATEGORIES_RESPONSE).also {
+                        it.setPackage(callbackPackageName)
+                        it.putExtra(EXTRA_ADHOC_EXPORT_CATEGORIES, adhocExportController.exportRecordsToJson())
+                        context.sendBroadcast(it);
+                    }
+                }
+            }
+
+            ACTION_ADHOC_EXPORT_PREFS -> {
+                val callbackPackageName = intent.getStringExtra(EXTRA_ADHOC_EXPORT_CALLBACK_PACKAGE_NAME)
+
+                if (callbackPackageName != null) {
+                    Intent(ACTION_ADHOC_EXPORT_PREFS_RESPONSE).also {
+                        it.setPackage(callbackPackageName)
+                        it.putExtra(EXTRA_ADHOC_EXPORT_ALLOW_MULTITASKING, adhocExportController.exportPrefs())
+                        context.sendBroadcast(it);
+                    }
+                }
+            }
         }
     }
 
@@ -242,5 +270,21 @@ class NotificationReceiver : BroadcastReceiver() {
             "extra_goal_time_type_id"
         const val EXTRA_GOAL_TIME_CATEGORY_ID =
             "extra_goal_time_category_id"
+
+        const val ACTION_ADHOC_EXPORT_CATEGORIES =
+            "com.razeeman.util.simpletimetracker.ACTION_ADHOC_EXPORT_CATEGORIES"
+        const val ACTION_ADHOC_EXPORT_PREFS =
+            "com.razeeman.util.simpletimetracker.ACTION_ADHOC_EXPORT_PREFS"
+        const val EXTRA_ADHOC_EXPORT_CALLBACK_PACKAGE_NAME =
+            "callback_package_name"
+        const val EXTRA_ADHOC_EXPORT_CATEGORIES =
+            "categories"
+        const val EXTRA_ADHOC_EXPORT_ALLOW_MULTITASKING =
+            "allow_multitasking"
+
+        const val ACTION_ADHOC_EXPORT_CATEGORIES_RESPONSE =
+            "com.razeeman.util.simpletimetracker.ACTION_ADHOC_EXPORT_CATEGORIES_RESPONSE"
+        const val ACTION_ADHOC_EXPORT_PREFS_RESPONSE =
+            "com.razeeman.util.simpletimetracker.ACTION_ADHOC_EXPORT_PREFS_RESPONSE"
     }
 }
